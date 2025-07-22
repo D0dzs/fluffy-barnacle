@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Comprehensive documentation for Hungarian Railway (MÁV) JSON5 data structure containing real-time vehicle positions, including trains, trams, and buses across Hungary."
+		/>
+		<meta
+			name="keywords"
+			content="MÁV, Hungarian Railway, JSON5, API documentation, real-time data, vehicle positions, public transport, trains, Hungary"
+		/>
+		<meta name="author" content="MÁV Data API Documentation" />
+		<meta name="robots" content="index, follow" />
+		<meta property="og:title" content="Hungarian Railway (MÁV) JSON5 Data Structure Documentation" />
+		<meta property="og:description" content="Real-time vehicle position data format documentation for Hungarian State Railways API" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content="MÁV JSON5 Data Documentation" />
+		<meta name="twitter:description" content="Hungarian Railway real-time data API documentation" />
+		<title>Hungarian Railway (MÁV) JSON5 Data Structure Documentation</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						colors: {
+							'mav-blue': '#0066cc',
+							'mav-red': '#dc2626',
+							'mav-green': '#059669',
+						},
+					},
+				},
+			};
+		</script>
+		<style>
+			.code-block {
+				background: #1e293b;
+				color: #e2e8f0;
+			}
+			.json-key {
+				color: #60a5fa;
+			}
+			.json-string {
+				color: #34d399;
+			}
+			.json-number {
+				color: #fbbf24;
+			}
+			.json-null {
+				color: #94a3b8;
+			}
+		</style>
+	</head>
+	<body class="bg-gray-50 text-gray-900">
+		<!-- Navigation -->
+		<nav class="bg-mav-blue text-white shadow-lg sticky top-0 z-50">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex justify-between items-center py-4">
+					<div class="flex items-center">
+						<div class="flex-shrink-0">
+							<h1 class="text-xl font-bold">MÁV Data API</h1>
+						</div>
+					</div>
+					<div class="hidden md:block">
+						<div class="flex items-baseline space-x-4">
+							<a href="#overview" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition">Overview</a>
+							<a href="#structure" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition">Structure</a>
+							<a href="#examples" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition">Examples</a>
+							<a href="#fields" class="hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition"
+								>Field Reference</a
+							>
+						</div>
+					</div>
+					<div class="md:hidden">
+						<button id="mobile-menu-btn" class="text-white hover:bg-blue-700 p-2 rounded-md">
+							<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+							</svg>
+						</button>
+					</div>
+				</div>
+				<div id="mobile-menu" class="hidden md:hidden pb-4">
+					<a href="#overview" class="block hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition">Overview</a>
+					<a href="#structure" class="block hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition">Structure</a>
+					<a href="#examples" class="block hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition">Examples</a>
+					<a href="#fields" class="block hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition"
+						>Field Reference</a
+					>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero Section -->
+		<div class="bg-gradient-to-r from-mav-blue to-blue-800 text-white">
+			<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+				<div class="text-center">
+					<h1 class="text-4xl font-extrabold md:text-6xl">MÁV Real-time Data</h1>
+					<p class="mt-4 text-xl md:text-2xl text-blue-100">Hungarian Railway Vehicle Position JSON5 Format Documentation</p>
+					<div class="mt-8">
+						<a
+							href="https://raw.githubusercontent.com/D0dzs/improved-giggle/main/train.json5"
+							target="_blank"
+							rel="noreferrer"
+							class="inline-flex items-center px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+						>
+							<svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+								<path
+									fill-rule="evenodd"
+									d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+									clip-rule="evenodd"
+								></path>
+							</svg>
+							Open JSON5 file in browser
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Main Content -->
+		<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+			<!-- Overview Section -->
+			<section id="overview" class="mb-16">
+				<div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+					<h2 class="text-3xl font-bold text-gray-900 mb-6">Overview</h2>
+					<div class="grid md:grid-cols-2 gap-8">
+						<div>
+							<h3 class="text-xl font-semibold text-mav-blue mb-4">What is this?</h3>
+							<p class="text-gray-600 leading-relaxed mb-4">
+								This documentation describes the JSON5 data structure used to store real-time vehicle positions from the
+								Hungarian State Railways (MÁV) system. The data includes trains, trams, buses, and other public
+								transportation vehicles across Hungary.
+							</p>
+							<div class="bg-blue-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-mav-blue mb-2">Data Source</h4>
+								<p class="text-sm text-gray-700">
+									<code class="bg-gray-200 px-2 py-1 rounded text-xs">emma.mav.hu/otp2-backend</code>
+								</p>
+							</div>
+						</div>
+						<div>
+							<h3 class="text-xl font-semibold text-mav-green mb-4">Key Features</h3>
+							<ul class="space-y-2">
+								<li class="flex items-center">
+									<svg class="w-5 h-5 text-mav-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+											clip-rule="evenodd"
+										></path>
+									</svg>
+									Real-time GPS coordinates
+								</li>
+								<li class="flex items-center">
+									<svg class="w-5 h-5 text-mav-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+											clip-rule="evenodd"
+										></path>
+									</svg>
+									Schedule and delay information
+								</li>
+								<li class="flex items-center">
+									<svg class="w-5 h-5 text-mav-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+											clip-rule="evenodd"
+										></path>
+									</svg>
+									Route and stop information
+								</li>
+								<li class="flex items-center">
+									<svg class="w-5 h-5 text-mav-green mr-2" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+											clip-rule="evenodd"
+										></path>
+									</svg>
+									Multiple transport modes
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Data Structure Section -->
+			<section id="structure" class="mb-16">
+				<div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+					<h2 class="text-3xl font-bold text-gray-900 mb-6">JSON5 File Structure</h2>
+
+					<div class="mb-8">
+						<h3 class="text-xl font-semibold text-mav-blue mb-4">Root Object</h3>
+						<p class="text-gray-600 mb-4">The JSON5 file contains two main sections:</p>
+						<div class="grid md:grid-cols-2 gap-6">
+							<div class="bg-blue-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-mav-blue mb-2">📊 Metadata</h4>
+								<p class="text-sm text-gray-700">
+									Contains information about when the data was fetched, source, and summary statistics.
+								</p>
+							</div>
+							<div class="bg-green-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-mav-green mb-2">🚂 Data</h4>
+								<p class="text-sm text-gray-700">Contains the actual vehicle position data from the MÁV API response.</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="code-block p-6 rounded-lg overflow-x-auto">
+						<pre class="text-sm"><code>{
+  <span class="json-key">"metadata"</span>: {
+    <span class="json-key">"fetch_time"</span>: <span class="json-string">"2024-01-15T14:30:25.123Z"</span>,
+    <span class="json-key">"source"</span>: <span class="json-string">"Hungarian Railway (MÁV) Real-time API"</span>,
+    <span class="json-key">"api_endpoint"</span>: <span class="json-string">"https://emma.mav.hu/otp2-backend/..."</span>,
+    <span class="json-key">"description"</span>: <span class="json-string">"Real-time positions of trains, trams, and buses in Hungary"</span>,
+    <span class="json-key">"vehicle_count"</span>: <span class="json-number">1247</span>
+  },
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"vehiclePositions"</span>: [
+      // Array of vehicle objects...
+    ]
+  }
+}</code></pre>
+					</div>
+				</div>
+			</section>
+
+			<!-- Examples Section -->
+			<section id="examples" class="mb-16">
+				<div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+					<h2 class="text-3xl font-bold text-gray-900 mb-6">Vehicle Object Example</h2>
+
+					<div class="mb-6">
+						<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+							<div class="flex">
+								<div class="flex-shrink-0">
+									<svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+										<path
+											fill-rule="evenodd"
+											d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</div>
+								<div class="ml-3">
+									<p class="text-sm text-yellow-700">
+										<strong>Note:</strong> Some fields may be
+										<code class="bg-yellow-200 px-1 rounded">null</code>
+										or missing depending on the vehicle type and data availability.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="code-block p-6 rounded-lg overflow-x-auto">
+						<pre class="text-sm"><code>{
+  <span class="json-key">"vehicleId"</span>: <span class="json-string">"1234567890"</span>,
+  <span class="json-key">"lat"</span>: <span class="json-number">47.4979</span>,
+  <span class="json-key">"lon"</span>: <span class="json-number">19.0402</span>,
+  <span class="json-key">"heading"</span>: <span class="json-number">180</span>,
+  <span class="json-key">"label"</span>: <span class="json-string">"IC 123"</span>,
+  <span class="json-key">"lastUpdated"</span>: <span class="json-number">1705328425</span>,
+  <span class="json-key">"speed"</span>: <span class="json-number">85.5</span>,
+  <span class="json-key">"stopRelationship"</span>: {
+    <span class="json-key">"status"</span>: <span class="json-string">"IN_TRANSIT_TO"</span>,
+    <span class="json-key">"stop"</span>: {
+      <span class="json-key">"gtfsId"</span>: <span class="json-string">"mav:12345"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"Budapest-Keleti"</span>
+    },
+    <span class="json-key">"arrivalTime"</span>: <span class="json-number">1705330200</span>,
+    <span class="json-key">"departureTime"</span>: <span class="json-number">1705330500</span>
+  },
+  <span class="json-key">"trip"</span>: {
+    <span class="json-key">"id"</span>: <span class="json-string">"trip_123456"</span>,
+    <span class="json-key">"gtfsId"</span>: <span class="json-string">"mav:trip_123456"</span>,
+    <span class="json-key">"routeShortName"</span>: <span class="json-string">"IC 123"</span>,
+    <span class="json-key">"tripHeadsign"</span>: <span class="json-string">"Budapest-Keleti"</span>,
+    <span class="json-key">"tripShortName"</span>: <span class="json-string">"123"</span>,
+    <span class="json-key">"route"</span>: {
+      <span class="json-key">"mode"</span>: <span class="json-string">"RAIL"</span>,
+      <span class="json-key">"shortName"</span>: <span class="json-string">"IC"</span>,
+      <span class="json-key">"longName"</span>: <span class="json-string">"InterCity"</span>,
+      <span class="json-key">"textColor"</span>: <span class="json-string">"FFFFFF"</span>,
+      <span class="json-key">"color"</span>: <span class="json-string">"0066CC"</span>
+    },
+    <span class="json-key">"pattern"</span>: {
+      <span class="json-key">"id"</span>: <span class="json-string">"pattern_789"</span>
+    }
+  },
+  <span class="json-key">"prevOrCurrentStop"</span>: {
+    <span class="json-key">"scheduledArrival"</span>: <span class="json-number">1705326600</span>,
+    <span class="json-key">"realtimeArrival"</span>: <span class="json-number">1705326720</span>,
+    <span class="json-key">"arrivalDelay"</span>: <span class="json-number">120</span>,
+    <span class="json-key">"scheduledDeparture"</span>: <span class="json-number">1705326900</span>,
+    <span class="json-key">"realtimeDeparture"</span>: <span class="json-number">1705327020</span>,
+    <span class="json-key">"departureDelay"</span>: <span class="json-number">120</span>
+  }
+}</code></pre>
+					</div>
+				</div>
+			</section>
+
+			<!-- Field Reference Section -->
+			<section id="fields" class="mb-16">
+				<div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+					<h2 class="text-3xl font-bold text-gray-900 mb-6">Field Reference</h2>
+
+					<!-- Metadata Fields -->
+					<div class="mb-10">
+						<h3 class="text-xl font-semibold text-mav-blue mb-4">Metadata Fields</h3>
+						<div class="overflow-x-auto">
+							<table class="min-w-full divide-y divide-gray-200">
+								<thead class="bg-gray-50">
+									<tr>
+										<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Field
+										</th>
+										<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+										<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Description
+										</th>
+									</tr>
+								</thead>
+								<tbody class="bg-white divide-y divide-gray-200">
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">fetch_time</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">string</td>
+										<td class="px-6 py-4 text-sm text-gray-500">ISO 8601 timestamp when data was fetched (UTC)</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">source</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">string</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Description of the data source</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">api_endpoint</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">string</td>
+										<td class="px-6 py-4 text-sm text-gray-500">URL of the API endpoint used</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">vehicle_count</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">number</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Total number of vehicles in this data set</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- Vehicle Position Fields -->
+					<div class="mb-10">
+						<h3 class="text-xl font-semibold text-mav-blue mb-4">Vehicle Position Fields</h3>
+						<div class="overflow-x-auto">
+							<table class="min-w-full divide-y divide-gray-200">
+								<thead class="bg-gray-50">
+									<tr>
+										<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Field
+										</th>
+										<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+										<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+											Description
+										</th>
+									</tr>
+								</thead>
+								<tbody class="bg-white divide-y divide-gray-200">
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">vehicleId</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">string</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Unique identifier for the vehicle</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">lat</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">number</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Latitude coordinate (WGS84)</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">lon</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">number</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Longitude coordinate (WGS84)</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">heading</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">number</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Direction of travel in degrees (0-360)</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">label</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">string</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Human-readable vehicle identifier (e.g., "IC 123")</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">lastUpdated</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">number</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Unix timestamp of last position update</td>
+									</tr>
+									<tr>
+										<td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-mav-blue">speed</td>
+										<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">number</td>
+										<td class="px-6 py-4 text-sm text-gray-500">Current speed in km/h</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- Transport Modes -->
+					<div class="mb-10">
+						<h3 class="text-xl font-semibold text-mav-blue mb-4">Transport Modes</h3>
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+							<div class="bg-blue-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-mav-blue">RAIL</h4>
+								<p class="text-sm text-gray-600">Regular passenger trains</p>
+							</div>
+							<div class="bg-green-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-mav-green">SUBURBAN_RAILWAY</h4>
+								<p class="text-sm text-gray-600">S-Bahn style suburban trains</p>
+							</div>
+							<div class="bg-yellow-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-yellow-600">TRAMTRAIN</h4>
+								<p class="text-sm text-gray-600">Tram-train hybrid vehicles</p>
+							</div>
+							<div class="bg-purple-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-purple-600">COACH</h4>
+								<p class="text-sm text-gray-600">Long-distance bus services</p>
+							</div>
+							<div class="bg-red-50 p-4 rounded-lg">
+								<h4 class="font-semibold text-mav-red">RAIL_REPLACEMENT_BUS</h4>
+								<p class="text-sm text-gray-600">Buses replacing train services</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- Status Values -->
+					<div>
+						<h3 class="text-xl font-semibold text-mav-blue mb-4">Stop Relationship Status</h3>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div class="bg-gray-50 p-4 rounded-lg">
+								<h4 class="font-semibold">IN_TRANSIT_TO</h4>
+								<p class="text-sm text-gray-600">Vehicle is traveling toward the next stop</p>
+							</div>
+							<div class="bg-gray-50 p-4 rounded-lg">
+								<h4 class="font-semibold">STOPPED_AT</h4>
+								<p class="text-sm text-gray-600">Vehicle is currently stopped at a station</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Usage Tips -->
+			<section class="mb-16">
+				<div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-lg p-6 md:p-8">
+					<h2 class="text-3xl font-bold text-gray-900 mb-6">💡 Usage Tips</h2>
+					<div class="grid md:grid-cols-2 gap-6">
+						<div>
+							<h3 class="text-lg font-semibold text-mav-blue mb-3">🗺️ Coordinates</h3>
+							<p class="text-gray-700 text-sm mb-2">All coordinates use the WGS84 coordinate system (GPS standard).</p>
+							<ul class="text-xs text-gray-600 space-y-1">
+								<li>• Latitude: -90 to +90 degrees</li>
+								<li>• Longitude: -180 to +180 degrees</li>
+								<li>• Hungary: ~45.7°N - 48.6°N, 16.1°E - 22.9°E</li>
+							</ul>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-mav-green mb-3">⏱️ Timestamps</h3>
+							<p class="text-gray-700 text-sm mb-2">All timestamps are Unix timestamps (seconds since epoch).</p>
+							<ul class="text-xs text-gray-600 space-y-1">
+								<li>• lastUpdated: When position was recorded</li>
+								<li>• Arrival/departure times: Schedule times</li>
+								<li>• Delays: In seconds (positive = late)</li>
+							</ul>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-yellow-600 mb-3">🎨 Colors</h3>
+							<p class="text-gray-700 text-sm mb-2">Route colors are provided as hex values without #.</p>
+							<ul class="text-xs text-gray-600 space-y-1">
+								<li>• color: Background color</li>
+								<li>• textColor: Text color for contrast</li>
+								<li>• Format: "0066CC" (not "#0066CC")</li>
+							</ul>
+						</div>
+						<div>
+							<h3 class="text-lg font-semibold text-purple-600 mb-3">🔄 Data Freshness</h3>
+							<p class="text-gray-700 text-sm mb-2">Data is typically updated every 30-60 seconds.</p>
+							<ul class="text-xs text-gray-600 space-y-1">
+								<li>• Check fetch_time in metadata</li>
+								<li>• Compare with lastUpdated per vehicle</li>
+								<li>• Some vehicles may have stale data</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<!-- Footer -->
+		<footer class="bg-gray-800 text-white py-8">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="text-center">
+					<p class="text-gray-400">Data sourced from MÁV (Hungarian State Railways) public API</p>
+					<p class="text-gray-500 text-sm mt-2">This documentation is for informational purposes only</p>
+				</div>
+			</div>
+		</footer>
+
+		<!-- Mobile Menu Script -->
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+				const mobileMenu = document.getElementById('mobile-menu');
+
+				if (mobileMenuBtn && mobileMenu) {
+					mobileMenuBtn.addEventListener('click', function () {
+						mobileMenu.classList.toggle('hidden');
+					});
+				}
+
+				// Smooth scrolling for anchor links
+				document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+					anchor.addEventListener('click', function (e) {
+						e.preventDefault();
+						const target = document.querySelector(this.getAttribute('href'));
+						if (target) {
+							target.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start',
+							});
+							// Close mobile menu if open
+							if (!mobileMenu.classList.contains('hidden')) {
+								mobileMenu.classList.add('hidden');
+							}
+						}
+					});
+				});
+
+				// Add highlighting for current section
+				const sections = document.querySelectorAll('section[id]');
+				const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+				function highlightNavLink() {
+					let current = '';
+					sections.forEach((section) => {
+						const sectionTop = section.offsetTop - 100;
+						const sectionHeight = section.offsetHeight;
+						if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+							current = section.getAttribute('id');
+						}
+					});
+
+					navLinks.forEach((link) => {
+						link.classList.remove('bg-blue-700');
+						if (link.getAttribute('href') === '#' + current) {
+							link.classList.add('bg-blue-700');
+						}
+					});
+				}
+
+				window.addEventListener('scroll', highlightNavLink);
+				highlightNavLink(); // Initial call
+			});
+		</script>
+	</body>
+</html>
