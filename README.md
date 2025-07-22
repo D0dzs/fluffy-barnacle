@@ -1,6 +1,7 @@
 [Public Documentation](https://d0dzs.github.io/improved-giggle/)
 
-❗ Currently updating the JSON5 file every hour till I find a solution to update every minute or so. ❗
+~~❗ Currently updating the JSON5 file every hour till I find a solution to update every minute or so. ❗~~
+#### EDIT: Using Cloudflare Workers to update the JSON5 file every minute.
 
 # Hungarian Train Data Fetcher 🚂
 

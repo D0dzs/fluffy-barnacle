@@ -2,24 +2,21 @@
 
 /**
  * Script to fetch Hungarian railway (MÁV) real-time vehicle positions
- * and save them to a JSON5 file for GitHub access.
+ * Updated for edge/serverless environments using fetch
  */
 
-const zlib = require('node:zlib');
-const https = require('node:https');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const outputDir = 'public';
 
 /**
- * Fetch train position data from MÁV API
+ * Fetch train position data from MÁV API using fetch
  */
 async function fetchTrainData() {
 	const url = 'https://emma.mav.hu/otp2-backend/otp/routers/default/index/graphql';
 
 	const headers = {
-		Host: 'emma.mav.hu',
 		'Content-Type': 'application/json',
 		Accept: '*/*',
 		Origin: 'https://emma.mav.hu',
@@ -27,13 +24,6 @@ async function fetchTrainData() {
 		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
 		'Accept-Language': 'en-US,en;q=0.9',
 		'Accept-Encoding': 'gzip, deflate, br',
-		'Sec-Fetch-Site': 'same-origin',
-		'Sec-Fetch-Mode': 'cors',
-		'Sec-Fetch-Dest': 'empty',
-		'Sec-Ch-Ua': '"Not)A;Brand";v="8", "Chromium";v="138"',
-		'Sec-Ch-Ua-Mobile': '?0',
-		'Sec-Ch-Ua-Platform': '"Windows"',
-		Connection: 'keep-alive',
 	};
 
 	const query = `
@@ -95,112 +85,52 @@ async function fetchTrainData() {
 		variables: {},
 	};
 
-	return new Promise((resolve) => {
-		try {
-			const postData = JSON.stringify(payload);
-			const urlObj = new URL(url);
+	try {
+		console.log('🌐 Making API request...');
 
-			const options = {
-				hostname: urlObj.hostname,
-				path: urlObj.pathname,
-				method: 'POST',
-				headers: {
-					...headers,
-					'Content-Length': Buffer.byteLength(postData),
-				},
-				timeout: 30000,
-			};
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: headers,
+			body: JSON.stringify(payload),
+		});
 
-			const req = https.request(options, (res) => {
-				let stream = res;
-				const encoding = res.headers['content-encoding'];
-
-				// Handle compressed responses
-				if (encoding === 'gzip') {
-					stream = res.pipe(zlib.createGunzip());
-				} else if (encoding === 'deflate') {
-					stream = res.pipe(zlib.createInflate());
-				} else if (encoding === 'br') {
-					stream = res.pipe(zlib.createBrotliDecompress());
-				}
-
-				let data = '';
-
-				stream.on('data', (chunk) => {
-					data += chunk;
-				});
-
-				stream.on('end', () => {
-					try {
-						if (res.statusCode !== 200) {
-							console.log(`❌ HTTP error: ${res.statusCode} ${res.statusMessage}`);
-							resolve(null);
-							return;
-						}
-
-						// Parse JSON response
-						const jsonData = JSON.parse(data);
-
-						// Validate GraphQL response structure
-						if (jsonData.errors) {
-							console.log(`❌ GraphQL API returned errors: ${JSON.stringify(jsonData.errors)}`);
-							resolve(null);
-							return;
-						}
-
-						if (!jsonData.data) {
-							console.log("❌ Invalid API response: missing 'data' field");
-							console.log(`🔍 Response keys: ${Object.keys(jsonData)}`);
-							resolve(null);
-							return;
-						}
-
-						if (!jsonData.data.vehiclePositions) {
-							console.log("❌ Invalid API response: missing 'vehiclePositions' field");
-							console.log(`🔍 Data keys: ${Object.keys(jsonData.data)}`);
-							resolve(null);
-							return;
-						}
-
-						const vehicles = jsonData.data.vehiclePositions;
-						if (!Array.isArray(vehicles)) {
-							console.log(`❌ Invalid vehiclePositions format: expected array, got ${typeof vehicles}`);
-							resolve(null);
-							return;
-						}
-
-						console.log(`✅ API response validated: ${vehicles.length} vehicles found`);
-						resolve(jsonData);
-					} catch (error) {
-						console.log(`❌ Invalid JSON response: ${error.message}`);
-						resolve(null);
-					}
-				});
-
-				stream.on('error', (error) => {
-					console.log(`❌ Decompression error: ${error.message}`);
-					resolve(null);
-				});
-			});
-
-			req.on('error', (error) => {
-				console.log(`❌ Network error fetching data: ${error.message}`);
-				resolve(null);
-			});
-
-			req.on('timeout', () => {
-				console.log('❌ Request timeout');
-				req.destroy();
-				resolve(null);
-			});
-
-			req.write(postData);
-			req.end();
-		} catch (error) {
-			console.log(`❌ Unexpected error processing API request: ${error.message}`);
-			resolve(null);
+		if (!response.ok) {
+			console.log(`❌ HTTP error: ${response.status} ${response.statusText}`);
+			return null;
 		}
-	});
+
+		const jsonData = await response.json();
+
+		// Validate GraphQL response structure
+		if (jsonData.errors) {
+			console.log(`❌ GraphQL API returned errors: ${JSON.stringify(jsonData.errors)}`);
+			return null;
+		}
+
+		if (!jsonData.data) {
+			console.log("❌ Invalid API response: missing 'data' field");
+			console.log(`🔍 Response keys: ${Object.keys(jsonData)}`);
+			return null;
+		}
+
+		if (!jsonData.data.vehiclePositions) {
+			console.log("❌ Invalid API response: missing 'vehiclePositions' field");
+			console.log(`🔍 Data keys: ${Object.keys(jsonData.data)}`);
+			return null;
+		}
+
+		const vehicles = jsonData.data.vehiclePositions;
+		if (!Array.isArray(vehicles)) {
+			console.log(`❌ Invalid vehiclePositions format: expected array, got ${typeof vehicles}`);
+			return null;
+		}
+
+		console.log(`✅ API response validated: ${vehicles.length} vehicles found`);
+		return jsonData;
+	} catch (error) {
+		console.log(`❌ Network error fetching data: ${error.message}`);
+		return null;
+	}
 }
 
 /**
@@ -228,18 +158,23 @@ function saveToJson5(data, filename = 'train.json5') {
 	};
 
 	try {
+		// Ensure output directory exists
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir, { recursive: true });
+		}
+
 		// Check if file exists before writing
-		const fileExists = fs.existsSync(filename);
+		const outputPath = path.join(outputDir, filename);
+		const fileExists = fs.existsSync(outputPath);
 		console.log(`📁 File ${filename} ${fileExists ? 'exists' : 'does not exist'} before writing`);
 
-		const outputPath = path.join(outputDir, filename);
 		fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2), { encoding: 'utf-8' });
 
 		// Check file after writing
-		if (fs.existsSync(path.join(outputDir, filename))) {
-			const stats = fs.statSync(path.join(outputDir, filename));
+		if (fs.existsSync(outputPath)) {
+			const stats = fs.statSync(outputPath);
 			const fileSize = stats.size;
-			console.log(`✅ Successfully saved ${outputData.metadata.vehicle_count} vehicles to ${filename}`);
+			console.log(`✅ Successfully saved ${outputData.metadata.vehicle_count} vehicles to ${filename} (${fileSize} bytes)`);
 		} else {
 			console.log(`❌ File ${filename} was not created!`);
 			return false;
@@ -263,6 +198,7 @@ async function main() {
 
 	if (data === null) {
 		console.log('❌ Failed to fetch data');
+		return;
 	}
 
 	// Debug: Show what we got
@@ -283,12 +219,14 @@ async function main() {
 
 	if (!success) {
 		console.log('Failed to save data');
+		return;
 	}
 
 	console.log('🎉 Data fetch and save completed successfully');
 
 	// Final file check for debugging
-	if (!fs.existsSync(path.join(outputDir, 'train.json5'))) {
+	const finalPath = path.join(outputDir, 'train.json5');
+	if (!fs.existsSync(finalPath)) {
 		console.log('❌ Warning: train.json5 does not exist after completion!');
 	}
 }
@@ -297,6 +235,7 @@ async function main() {
 if (require.main === module) {
 	main().catch((error) => {
 		console.error('❌ Unhandled error:', error.message);
+		console.error(error.stack);
 	});
 }
 
