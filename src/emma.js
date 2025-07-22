@@ -17,11 +17,21 @@ async function fetchTrainData() {
 	const url = 'https://emma.mav.hu/otp2-backend/otp/routers/default/index/graphql';
 
 	const headers = {
+		Host: 'emma.mav.hu',
 		'Content-Type': 'application/json',
 		Accept: '*/*',
+		Origin: 'https://emma.mav.hu',
+		Referer: 'https://emma.mav.hu/',
 		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
 		'Accept-Language': 'en-US,en;q=0.9',
 		'Accept-Encoding': 'gzip, deflate, br',
+		'Sec-Fetch-Site': 'same-origin',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Ch-Ua': '"Not)A;Brand";v="8", "Chromium";v="138"',
+		'Sec-Ch-Ua-Mobile': '?0',
+		'Sec-Ch-Ua-Platform': '"Windows"',
+		Connection: 'keep-alive',
 	};
 
 	const query = `{vehiclePositions(swLat: 45.45705023932743,swLon: 15.663443499528626,neLat: 48.768228505564224,neLon: 22.56329116419002,modes: [RAIL,RAIL_REPLACEMENT_BUS,SUBURBAN_RAILWAY,TRAMTRAIN,COACH]) { vehicleId lat lon heading label lastUpdated speed stopRelationship { status stop { gtfsId name } arrivalTime departureTime } trip { id gtfsId routeShortName tripHeadsign tripShortName route { mode shortName longName textColor color } pattern { id } } prevOrCurrentStop { scheduledArrival realtimeArrival arrivalDelay scheduledDeparture realtimeDeparture departureDelay } } }`;
